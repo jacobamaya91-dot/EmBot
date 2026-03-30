@@ -434,14 +434,22 @@ app.get('/staff-time', (req, res) => {
     const { username } = req.query;
     const data = staffLogs[username];
 
+    // ✅ FORMATTER ADDED (no deletions)
+    function formatDuration(seconds) {
+        seconds = Number(seconds) || 0;
+
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = Math.floor(seconds % 60);
+
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+
     if (!data) return res.json({ username, total: "00:00:00" });
 
     let total = 0;
     for (const d in data) total += data[d];
 
-    res.json({ username, total });
+    // ✅ APPLY FORMATTER HERE (only modification to output)
+    res.json({ username, total: formatDuration(total) });
 });
-
-app.listen(process.env.PORT || 3000, () => console.log('API running'));
-
-client.login(process.env.TOKEN);
